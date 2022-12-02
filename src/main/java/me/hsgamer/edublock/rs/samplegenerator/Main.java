@@ -105,7 +105,6 @@ public class Main {
                     .headers("Authorization", "Bearer " + token)
                     .PUT(HttpRequest.BodyPublishers.ofString(JsonUtil.toJson(profileUpdate)))
                     .build();
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         } else {
             updateRequest = HttpRequest.newBuilder()
                     .uri(urlSupplier.getUri("/account/" + rawAccountWithProfileOutput.getAccount().getId() + "/profile"))
@@ -113,7 +112,6 @@ public class Main {
                     .headers("Authorization", "Bearer " + updateProfileToken)
                     .PUT(HttpRequest.BodyPublishers.ofString(JsonUtil.toJson(profileUpdate)))
                     .build();
-            httpClient.send(request, HttpResponse.BodyHandlers.ofString());
         }
         HttpResponse<String> updateResponse = httpClient.send(updateRequest, HttpResponse.BodyHandlers.ofString());
         assertResponse(updateResponse);
