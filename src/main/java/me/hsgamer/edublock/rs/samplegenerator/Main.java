@@ -20,6 +20,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.ThreadLocalRandom;
 
 public class Main {
     private static UrlSupplier urlSupplier;
@@ -92,8 +93,11 @@ public class Main {
             ));
         }
         Map<Long, Long> teacherIdList = new HashMap<>();
+        Map<String, Long> teacherTokenList = new HashMap<>();
         for (var entry : teacherList) {
-            teacherIdList.put(createAccount(entry.profileUpdate(), "teacher", staffToken).getKey().getAccount().getId(), entry.subjectId());
+            var accountWithProfileOutputEntry = createAccount(entry.profileUpdate(), "teacher", staffToken);
+            teacherIdList.put(accountWithProfileOutputEntry.getKey().getAccount().getId(), entry.subjectId());
+            teacherTokenList.put(accountWithProfileOutputEntry.getValue(), entry.subjectId());
         }
         long homeroomTeacherId = teacherIdList.keySet().stream().findFirst().orElseThrow();
 
@@ -121,7 +125,14 @@ public class Main {
                 2018,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput = createClassroom(classCreate, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        ClassroomOutput classroomOutput = createClassroom(classCreate, staffToken, studentIdList, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput, teacherToken, subjectId, studentIdList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput);
         ClassCreate classCreate1 = new ClassCreate(
                 "11A",
@@ -129,7 +140,14 @@ public class Main {
                 2019,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput1 = createClassroom(classCreate1, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        ClassroomOutput classroomOutput1 = createClassroom(classCreate1, staffToken, studentIdList, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput1, teacherToken, subjectId, studentIdList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput1);
         ClassCreate classCreate2 = new ClassCreate(
                 "12A",
@@ -137,7 +155,14 @@ public class Main {
                 2020,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput2 = createClassroom(classCreate2, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        ClassroomOutput classroomOutput2 = createClassroom(classCreate2, staffToken, studentIdList, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput2, teacherToken, subjectId, studentIdList);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput2);
 
         // Create another student accounts
@@ -164,7 +189,14 @@ public class Main {
                 2018,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput3 = createClassroom(classCreate3, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        ClassroomOutput classroomOutput3 = createClassroom(classCreate3, staffToken, studentIdList1, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput3, teacherToken, subjectId, studentIdList1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput3);
         ClassCreate classCreate4 = new ClassCreate(
                 "11B",
@@ -172,7 +204,14 @@ public class Main {
                 2019,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput4 = createClassroom(classCreate4, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        ClassroomOutput classroomOutput4 = createClassroom(classCreate4, staffToken, studentIdList1, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput4, teacherToken, subjectId, studentIdList1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput4);
         ClassCreate classCreate5 = new ClassCreate(
                 "12B",
@@ -180,7 +219,14 @@ public class Main {
                 2020,
                 homeroomTeacherId
         );
-        ClassroomOutput classroomOutput5 = createClassroom(classCreate5, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        ClassroomOutput classroomOutput5 = createClassroom(classCreate5, staffToken, studentIdList1, teacherIdList);
+        teacherTokenList.forEach((teacherToken, subjectId) -> {
+            try {
+                updateRecordEntry(classroomOutput5, teacherToken, subjectId, studentIdList1);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+        });
         System.out.println("Classroom: " + classroomOutput5);
     }
 
@@ -242,7 +288,7 @@ public class Main {
         return Map.entry(rawAccountWithProfileOutput, token);
     }
 
-    private static ClassroomOutput createClassroom(ClassCreate classCreate, String staffToken, long homeroomTeacherId, List<Long> studentIdList, Map<Long, Long> teacherIdList) throws IOException, InterruptedException {
+    private static ClassroomOutput createClassroom(ClassCreate classCreate, String staffToken, List<Long> studentIdList, Map<Long, Long> teacherIdList) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(urlSupplier.getUri("/classroom"))
                 .headers("Content-Type", "application/json")
@@ -281,5 +327,27 @@ public class Main {
         assertResponse(addTeacherResponse);
 
         return classroomResponse.getData();
+    }
+
+    private static void updateRecordEntry(ClassroomOutput classroom, String teacherToken, long subjectId, List<Long> studentIds) throws Exception {
+        for (var studentId : studentIds) {
+            PendingRecordEntryInput input = new PendingRecordEntryInput(
+                    studentId,
+                    classroom.getId(),
+                    ThreadLocalRandom.current().nextFloat() * 10,
+                    ThreadLocalRandom.current().nextFloat() * 10,
+                    ThreadLocalRandom.current().nextFloat() * 10,
+                    subjectId
+            );
+            HttpRequest request = HttpRequest.newBuilder()
+                    .uri(urlSupplier.getUri("/record/entry"))
+                    .headers("Content-Type", "application/json")
+                    .headers("Authorization", "Bearer " + teacherToken)
+                    .POST(HttpRequest.BodyPublishers.ofString(JsonUtil.toJson(input)))
+                    .build();
+
+            var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
+            assertResponse(response);
+        }
     }
 }
