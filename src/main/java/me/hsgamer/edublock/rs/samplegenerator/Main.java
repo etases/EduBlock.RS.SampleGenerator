@@ -1,6 +1,10 @@
 package me.hsgamer.edublock.rs.samplegenerator;
 
-import me.hsgamer.edublock.rs.samplegenerator.list.DataList;
+import me.hsgamer.edublock.rs.samplegenerator.data.AdminAccountCreateAndProfile;
+import me.hsgamer.edublock.rs.samplegenerator.data.StaffAccountCreateAndProfile;
+import me.hsgamer.edublock.rs.samplegenerator.data.StudentAccountCreateAndProfile;
+import me.hsgamer.edublock.rs.samplegenerator.data.TeacherAccountCreateAndProfile;
+import me.hsgamer.edublock.rs.samplegenerator.list.FakerUtil;
 import me.hsgamer.edublock.rs.samplegenerator.model.input.*;
 import me.hsgamer.edublock.rs.samplegenerator.model.output.AccountWithProfileListResponse;
 import me.hsgamer.edublock.rs.samplegenerator.model.output.ClassroomResponse;
@@ -31,31 +35,85 @@ public class Main {
         httpClient = HttpClient.newHttpClient();
 
         // Create admin accounts
+        List<AdminAccountCreateAndProfile> adminList = FakerUtil.createDataList(2, faker -> new AdminAccountCreateAndProfile(
+                new ProfileUpdate(
+                        faker.name().firstName(),
+                        faker.name().lastName(),
+                        faker.demographic().sex().equalsIgnoreCase("male"),
+                        faker.internet().avatar(),
+                        faker.date().birthday(20, 21),
+                        faker.address().fullAddress(),
+                        faker.phoneNumber().subscriberNumber(10),
+                        faker.internet().emailAddress()
+                )
+        ));
         List<Map.Entry<AccountWithProfileOutput, String>> adminTokenList = new ArrayList<>();
-        for (var entry : DataList.adminList) {
+        for (var entry : adminList) {
             adminTokenList.add(createAccount(entry.profileUpdate(), "admin", null));
         }
 
         // Create staff accounts
+        List<StaffAccountCreateAndProfile> staffList = FakerUtil.createDataList(10, faker -> new StaffAccountCreateAndProfile(
+                new ProfileUpdate(
+                        faker.name().firstName(),
+                        faker.name().lastName(),
+                        faker.demographic().sex().equalsIgnoreCase("male"),
+                        faker.internet().avatar(),
+                        faker.date().birthday(20, 21),
+                        faker.address().fullAddress(),
+                        faker.phoneNumber().subscriberNumber(10),
+                        faker.internet().emailAddress()
+                )
+        ));
         List<Map.Entry<AccountWithProfileOutput, String>> staffTokenList = new ArrayList<>();
-        for (var entry : DataList.staffList) {
+        for (var entry : staffList) {
             staffTokenList.add(createAccount(entry.profileUpdate(), "staff", null));
         }
         String staffToken = staffTokenList.get(0).getValue();
 
-        // Create student accounts
-        List<Long> studentIdList = new ArrayList<>();
-        for (var entry : DataList.studentList) {
-            studentIdList.add(createAccount(entry.profileUpdate(), "student", staffToken).getKey().getAccount().getId());
-        }
-
         // Create teacher accounts
+        List<ProfileUpdate> teacherProfileList = FakerUtil.createDataList(15, faker ->
+                new ProfileUpdate(
+                        faker.name().firstName(),
+                        faker.name().lastName(),
+                        faker.demographic().sex().equalsIgnoreCase("male"),
+                        faker.internet().avatar(),
+                        faker.date().birthday(20, 21),
+                        faker.address().fullAddress(),
+                        faker.phoneNumber().subscriberNumber(10),
+                        faker.internet().emailAddress()
+                )
+        );
+        List<TeacherAccountCreateAndProfile> teacherList = new ArrayList<>();
+        for (int i = 0; i < 15; i++) {
+            teacherList.add(new TeacherAccountCreateAndProfile(
+                    teacherProfileList.get(i),
+                    i + 1
+            ));
+        }
         Map<Long, Long> teacherIdList = new HashMap<>();
-        for (var entry : DataList.teacherList) {
+        for (var entry : teacherList) {
             teacherIdList.put(createAccount(entry.profileUpdate(), "teacher", staffToken).getKey().getAccount().getId(), entry.subjectId());
         }
         long homeroomTeacherId = teacherIdList.keySet().stream().findFirst().orElseThrow();
 
+        // Create student accounts
+        List<StudentAccountCreateAndProfile> studentList = FakerUtil.createDataList(30, faker -> StudentAccountCreateAndProfile.of(
+                new ProfileUpdate(
+                        faker.name().firstName(),
+                        faker.name().lastName(),
+                        faker.demographic().sex().equalsIgnoreCase("male"),
+                        faker.internet().avatar(),
+                        faker.date().birthday(17, 18),
+                        faker.address().fullAddress(),
+                        faker.phoneNumber().subscriberNumber(10),
+                        faker.internet().emailAddress()
+                )
+        ));
+        List<Long> studentIdList = new ArrayList<>();
+        for (var entry : studentList) {
+            studentIdList.add(createAccount(entry.profileUpdate(), "student", staffToken).getKey().getAccount().getId());
+        }
         // Create classroom
         ClassCreate classCreate = new ClassCreate(
                 "10A",
@@ -65,7 +123,6 @@ public class Main {
         );
         ClassroomOutput classroomOutput = createClassroom(classCreate, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
         System.out.println("Classroom: " + classroomOutput);
-
         ClassCreate classCreate1 = new ClassCreate(
                 "11A",
                 11,
@@ -74,7 +131,6 @@ public class Main {
         );
         ClassroomOutput classroomOutput1 = createClassroom(classCreate1, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
         System.out.println("Classroom: " + classroomOutput1);
-
         ClassCreate classCreate2 = new ClassCreate(
                 "12A",
                 12,
@@ -83,6 +139,49 @@ public class Main {
         );
         ClassroomOutput classroomOutput2 = createClassroom(classCreate2, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
         System.out.println("Classroom: " + classroomOutput2);
+
+        // Create another student accounts
+        List<StudentAccountCreateAndProfile> studentList1 = FakerUtil.createDataList(30, faker -> StudentAccountCreateAndProfile.of(
+                new ProfileUpdate(
+                        faker.name().firstName(),
+                        faker.name().lastName(),
+                        faker.demographic().sex().equalsIgnoreCase("male"),
+                        faker.internet().avatar(),
+                        faker.date().birthday(17, 18),
+                        faker.address().fullAddress(),
+                        faker.phoneNumber().subscriberNumber(10),
+                        faker.internet().emailAddress()
+                )
+        ));
+        List<Long> studentIdList1 = new ArrayList<>();
+        for (var entry : studentList1) {
+            studentIdList1.add(createAccount(entry.profileUpdate(), "student", staffToken).getKey().getAccount().getId());
+        }
+        // Create another classroom
+        ClassCreate classCreate3 = new ClassCreate(
+                "10B",
+                10,
+                2018,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput3 = createClassroom(classCreate3, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        System.out.println("Classroom: " + classroomOutput3);
+        ClassCreate classCreate4 = new ClassCreate(
+                "11B",
+                11,
+                2019,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput4 = createClassroom(classCreate4, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        System.out.println("Classroom: " + classroomOutput4);
+        ClassCreate classCreate5 = new ClassCreate(
+                "12B",
+                12,
+                2020,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput5 = createClassroom(classCreate5, staffToken, homeroomTeacherId, studentIdList1, teacherIdList);
+        System.out.println("Classroom: " + classroomOutput5);
     }
 
     private static void assertResponse(HttpResponse<?> response) {
