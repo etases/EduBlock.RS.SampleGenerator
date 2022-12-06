@@ -12,8 +12,10 @@ import java.util.function.Predicate;
 
 @UtilityClass
 public class FakerUtil {
+    private static final Random mainRandom = new Random(42);
+
     public Faker newFaker(Locale locale) {
-        return new Faker(locale, new Random(42));
+        return new Faker(locale, new Random(mainRandom.nextLong()));
     }
 
     public Faker newFaker() {
