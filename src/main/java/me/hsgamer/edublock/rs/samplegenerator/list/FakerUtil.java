@@ -6,13 +6,14 @@ import lombok.experimental.UtilityClass;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.Random;
 import java.util.function.Function;
 import java.util.function.Predicate;
 
 @UtilityClass
 public class FakerUtil {
     public Faker newFaker(Locale locale) {
-        return new Faker(locale);
+        return new Faker(locale, new Random(42));
     }
 
     public Faker newFaker() {
