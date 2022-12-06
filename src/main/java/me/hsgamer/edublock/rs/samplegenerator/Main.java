@@ -57,8 +57,32 @@ public class Main {
         long homeroomTeacherId = teacherIdList.keySet().stream().findFirst().orElseThrow();
 
         // Create classroom
-        ClassroomOutput classroomOutput = createClassroom(staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        ClassCreate classCreate = new ClassCreate(
+                "10A",
+                10,
+                2018,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput = createClassroom(classCreate, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
         System.out.println("Classroom: " + classroomOutput);
+
+        ClassCreate classCreate1 = new ClassCreate(
+                "11A",
+                11,
+                2019,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput1 = createClassroom(classCreate1, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        System.out.println("Classroom: " + classroomOutput1);
+
+        ClassCreate classCreate2 = new ClassCreate(
+                "12A",
+                12,
+                2020,
+                homeroomTeacherId
+        );
+        ClassroomOutput classroomOutput2 = createClassroom(classCreate2, staffToken, homeroomTeacherId, studentIdList, teacherIdList);
+        System.out.println("Classroom: " + classroomOutput2);
     }
 
     private static void assertResponse(HttpResponse<?> response) {
@@ -119,13 +143,7 @@ public class Main {
         return Map.entry(rawAccountWithProfileOutput, token);
     }
 
-    private static ClassroomOutput createClassroom(String staffToken, long homeroomTeacherId, List<Long> studentIdList, Map<Long, Long> teacherIdList) throws IOException, InterruptedException {
-        ClassCreate classCreate = new ClassCreate(
-                "10A",
-                10,
-                2018,
-                homeroomTeacherId
-        );
+    private static ClassroomOutput createClassroom(ClassCreate classCreate, String staffToken, long homeroomTeacherId, List<Long> studentIdList, Map<Long, Long> teacherIdList) throws IOException, InterruptedException {
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(urlSupplier.getUri("/classroom"))
                 .headers("Content-Type", "application/json")
