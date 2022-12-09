@@ -13,6 +13,8 @@ import me.hsgamer.edublock.rs.samplegenerator.model.output.element.AccountWithPr
 import me.hsgamer.edublock.rs.samplegenerator.model.output.element.ClassroomOutput;
 
 import java.io.IOException;
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
@@ -37,11 +39,10 @@ public class Main {
 
         // Create admin accounts
         List<AdminAccountCreateAndProfile> adminList = FakerUtil.createDataList(2, faker -> new AdminAccountCreateAndProfile(
-                new ProfileUpdate(
+                ProfileUpdate.of(
                         faker.name().firstName(),
                         faker.name().lastName(),
                         faker.demographic().sex().equalsIgnoreCase("male"),
-                        faker.internet().avatar(),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
                         faker.phoneNumber().subscriberNumber(10),
@@ -55,11 +56,10 @@ public class Main {
 
         // Create staff accounts
         List<StaffAccountCreateAndProfile> staffList = FakerUtil.createDataList(10, faker -> new StaffAccountCreateAndProfile(
-                new ProfileUpdate(
+                ProfileUpdate.of(
                         faker.name().firstName(),
                         faker.name().lastName(),
                         faker.demographic().sex().equalsIgnoreCase("male"),
-                        faker.internet().avatar(),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
                         faker.phoneNumber().subscriberNumber(10),
@@ -74,11 +74,10 @@ public class Main {
 
         // Create teacher accounts
         List<ProfileUpdate> teacherProfileList = FakerUtil.createDataList(15, faker ->
-                new ProfileUpdate(
+                ProfileUpdate.of(
                         faker.name().firstName(),
                         faker.name().lastName(),
                         faker.demographic().sex().equalsIgnoreCase("male"),
-                        faker.internet().avatar(),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
                         faker.phoneNumber().subscriberNumber(10),
@@ -103,11 +102,10 @@ public class Main {
 
         // Create student accounts
         List<StudentAccountCreateAndProfile> studentList = FakerUtil.createDataList(30, faker -> StudentAccountCreateAndProfile.of(
-                new ProfileUpdate(
+                ProfileUpdate.of(
                         faker.name().firstName(),
                         faker.name().lastName(),
                         faker.demographic().sex().equalsIgnoreCase("male"),
-                        faker.internet().avatar(),
                         faker.date().birthday(17, 18),
                         faker.address().fullAddress(),
                         faker.phoneNumber().subscriberNumber(10),
@@ -167,11 +165,10 @@ public class Main {
 
         // Create another student accounts
         List<StudentAccountCreateAndProfile> studentList1 = FakerUtil.createDataList(30, faker -> StudentAccountCreateAndProfile.of(
-                new ProfileUpdate(
+                ProfileUpdate.of(
                         faker.name().firstName(),
                         faker.name().lastName(),
                         faker.demographic().sex().equalsIgnoreCase("male"),
-                        faker.internet().avatar(),
                         faker.date().birthday(17, 18),
                         faker.address().fullAddress(),
                         faker.phoneNumber().subscriberNumber(10),
@@ -334,9 +331,9 @@ public class Main {
             PendingRecordEntryInput input = new PendingRecordEntryInput(
                     studentId,
                     classroom.getId(),
-                    ThreadLocalRandom.current().nextFloat() * 10,
-                    ThreadLocalRandom.current().nextFloat() * 10,
-                    ThreadLocalRandom.current().nextFloat() * 10,
+                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
+                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
+                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
                     subjectId
             );
             HttpRequest request = HttpRequest.newBuilder()
@@ -349,5 +346,13 @@ public class Main {
             var response = httpClient.send(request, HttpResponse.BodyHandlers.ofString());
             assertResponse(response);
         }
+    }
+
+    private static float round(double value, int places) {
+        if (places < 0) throw new IllegalArgumentException();
+
+        BigDecimal bd = new BigDecimal(Double.toString(value));
+        bd = bd.setScale(places, RoundingMode.HALF_UP);
+        return bd.floatValue();
     }
 }

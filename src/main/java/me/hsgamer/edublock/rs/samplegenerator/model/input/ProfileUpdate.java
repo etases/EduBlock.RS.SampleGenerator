@@ -4,6 +4,7 @@ import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.util.Date;
+import java.util.concurrent.ThreadLocalRandom;
 
 @Getter
 @Setter
@@ -21,18 +22,15 @@ public class ProfileUpdate {
     String email;
 
     public static ProfileUpdate of(
-            String fullName,
+            String firstName,
+            String lastName,
             boolean male,
-            String avatar,
             Date birthDate,
             String address,
             String phone,
             String email
     ) {
-        String[] names = fullName.split(" ");
-        String firstName = names[names.length - 1];
-        String lastName = fullName.substring(0, fullName.length() - firstName.length() - 1);
-
+        String avatar = "https://avatars.dicebear.com/api/" + (male ? "male" : "female") + "/" + ThreadLocalRandom.current().nextInt(1000000, 9999999) + ".svg";
         return new ProfileUpdate(
                 firstName,
                 lastName,
