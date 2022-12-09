@@ -29,7 +29,7 @@ public class Main {
     private static HttpClient httpClient;
 
     public static void main(String[] args) throws Exception {
-        String baseUrl = args.length > 0 ? args[0] : "http://localhost:7070";
+        String baseUrl = args.length > 0 ? args[0] : "http://edublock-rs.docker.localhost";
         urlSupplier = path -> {
             String normalizedBaseUrl = baseUrl.endsWith("/") ? baseUrl.substring(0, baseUrl.length() - 1) : baseUrl;
             String normalizedPath = path.startsWith("/") ? path.substring(1) : path;
