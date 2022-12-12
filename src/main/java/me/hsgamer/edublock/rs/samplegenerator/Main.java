@@ -331,9 +331,9 @@ public class Main {
             PendingRecordEntryInput input = new PendingRecordEntryInput(
                     studentId,
                     classroom.getId(),
-                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
-                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
-                    round(ThreadLocalRandom.current().nextFloat() * 10, 2),
+                    (subjectId == 12 || subjectId == 15) ? 10 : round(ThreadLocalRandom.current().nextDouble(5.0, 10.0), 2),
+                    (subjectId == 12 || subjectId == 15) ? 10 : round(ThreadLocalRandom.current().nextDouble(5.0, 10.0), 2),
+                    (subjectId == 12 || subjectId == 15) ? 10 : round(ThreadLocalRandom.current().nextDouble(5.0, 10.0), 2),
                     subjectId
             );
             HttpRequest request = HttpRequest.newBuilder()
