@@ -45,7 +45,7 @@ public class Main {
                         faker.demographic().sex().equalsIgnoreCase("male"),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
-                        faker.phoneNumber().subscriberNumber(10),
+                        faker.numerify("0" + "#".repeat(9)),
                         faker.internet().emailAddress()
                 )
         ));
@@ -62,7 +62,7 @@ public class Main {
                         faker.demographic().sex().equalsIgnoreCase("male"),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
-                        faker.phoneNumber().subscriberNumber(10),
+                        faker.numerify("0" + "#".repeat(9)),
                         faker.internet().emailAddress()
                 )
         ));
@@ -80,7 +80,7 @@ public class Main {
                         faker.demographic().sex().equalsIgnoreCase("male"),
                         faker.date().birthday(20, 21),
                         faker.address().fullAddress(),
-                        faker.phoneNumber().subscriberNumber(10),
+                        faker.numerify("0" + "#".repeat(9)),
                         faker.internet().emailAddress()
                 )
         );
@@ -108,7 +108,7 @@ public class Main {
                         faker.demographic().sex().equalsIgnoreCase("male"),
                         faker.date().birthday(17, 18),
                         faker.address().fullAddress(),
-                        faker.phoneNumber().subscriberNumber(10),
+                        faker.numerify("0" + "#".repeat(9)),
                         faker.internet().emailAddress()
                 )
         ));
@@ -171,7 +171,7 @@ public class Main {
                         faker.demographic().sex().equalsIgnoreCase("male"),
                         faker.date().birthday(17, 18),
                         faker.address().fullAddress(),
-                        faker.phoneNumber().subscriberNumber(10),
+                        faker.numerify("0" + "#".repeat(9)),
                         faker.internet().emailAddress()
                 )
         ));
